@@ -9,7 +9,7 @@ class Localhost {
   host 127.0.0.1
 }
 
-class DockerMySQL {
+class DockerContainer {
   bind_host 127.0.0.1
   bind_port 33061, 33062
   driver bridge
@@ -38,9 +38,9 @@ class DockerMySQLSlave {
   root_password empty
 }
 
-Localhost <|--|> DockerMySQL
-DockerMySQL <|--|> DockerMySQLMaster
-DockerMySQL <|--|> DockerMySQLSlave
+Localhost -- DockerContainer
+DockerContainer -- DockerMySQLMaster
+DockerContainer -- DockerMySQLSlave
 ```
 
 ## Run Docker Compose
