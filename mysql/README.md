@@ -22,6 +22,11 @@ class DockerMySQLMaster {
   bind_port 33061
   inner_host 172.5.0.2
   inner_port 3306
+  root_username root
+  root_password empty
+  slave_username slave
+  slave_password empty
+
 }
 
 class DockerMySQLSlave {
@@ -29,6 +34,8 @@ class DockerMySQLSlave {
   bind_port 33062
   inner_host 172.5.0.3
   inner_port 3306
+  root_username root
+  root_password empty
 }
 
 Localhost <|--|> DockerMySQL
