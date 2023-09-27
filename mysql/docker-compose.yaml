@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  mysql-master:
+    build: .
+    container_name: mysql-master
+    ports:
+      - 33061:3306
+    command:
+      - --server-id=1
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --log_bin=/var/log/mysql/mysql-bin.log
+      - --expire_logs_days=90
+      - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    volumes:
+      - ./master/logs:/var/log/mysql
+      - ./master/data:/var/lib/mysql
+      - ./master/dump:/disk
+    networks:
+      network:
+        ipv4_address: 172.5.0.2
+
+  mysql-slave:
+    build: .
+    container_name: mysql-slave
+    ports:
+      - 33062:3306
+    command:
+      - --server-id=2
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --log_bin=/var/log/mysql/mysql-bin.log
+      - --expire_logs_days=90
+      - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    volumes:
+      - ./slave/logs:/var/log/mysql
+      - ./slave/data:/var/lib/mysql
+      - ./slave/dump:/disk
+    networks:
+      network:
+        ipv4_address: 172.5.0.3
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.5.0.0/16
+          gateway: 172.5.0.1
