@@ -1,0 +1,17 @@
+-- slave 계정 생성 및 권한 설정
+CREATE USER 'slave'@'%' IDENTIFIED BY 'slave_password';
+GRANT ALL PRIVILEGES ON `local`.* TO 'slave'@'%';
+
+FLUSH PRIVILEGES;
+
+-- master DBMS 연결
+CHANGE REPLICATION SOURCE TO
+  SOURCE_HOST='172.5.0.2',
+  SOURCE_LOG_FILE='mysql-bin.000003',
+  SOURCE_LOG_POS=591,
+  SOURCE_SSL=0;
+
+-- replica 실행
+START REPLICA USER='repl' PASSWORD='';
+
+SHOW REPLICA STATUS;
