@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { BadRequestException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 
-import { InjectSlaveRepository } from '@core/decorators';
+import { InjectSlaveRepository } from '@common/decorators';
 import { BcryptService } from '@common/services';
 import { UserQuery } from '@common/queries';
 import { User } from '@common/entities';

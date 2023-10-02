@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
-import { InjectSlaveRepository } from '@core/decorators';
+import { InjectSlaveRepository } from '@common/decorators';
 import { User } from '@common/entities';
 import { UserQuery } from '@common/queries';
 
@@ -14,8 +14,8 @@ export class UserService {
   ) {}
 
   async getUsersAndCount() {
-    const [rows, count] = await new UserQuery(this.userRepository).findUsersAndCount();
+    const [users, count] = await new UserQuery(this.userRepository).findUsersAndCount();
 
-    return { count, rows };
+    return { count, users };
   }
 }

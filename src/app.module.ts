@@ -14,6 +14,7 @@ import { AppService } from './app.service';
 
 import { AuthModule } from '@module/auth';
 import { UserModule } from '@module/user';
+import { ArticleModule } from '@module/article';
 
 const entityTargets = Object.values(entities);
 
@@ -26,6 +27,7 @@ const entityTargets = Object.values(entities);
     JwtModule.register(new JwtConfig('JWT').getJwtModuleOptions()),
     AuthModule,
     UserModule,
+    ArticleModule,
   ],
   controllers: [AppController],
   providers: [AppService, ThrottlerGuard, JwtGuardStrategy, JwtGuard],
