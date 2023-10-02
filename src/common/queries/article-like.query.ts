@@ -16,4 +16,12 @@ export class ArticleLikeQuery {
   async countByArticle(articleId: number) {
     return this.repo.count({ select: ['articleId'], where: { articleId } });
   }
+
+  async upsertArticleLike(articleId: number, userId: number) {
+    return this.repo.upsert({ articleId, userId }, { conflictPaths: { articleId: true, userId: true } });
+  }
+
+  async deleteArticleLike(articleId: number, userId: number) {
+    return this.repo.delete({ articleId, userId });
+  }
 }

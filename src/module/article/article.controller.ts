@@ -1,8 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 
 import { JwtOptionalGuard, JwtRequiredGuard } from '@common/guards';
 import { RequestUserID } from '@common/decorators';
-import { CreateArticleBodyDto, GetArticleParamDto, UpdateArticleBodyDto } from '@dto/article';
+import {
+  CreateArticleBodyDto,
+  GetArticleParamDto,
+  LikeOrUnLikeArticleBodyDto,
+  UpdateArticleBodyDto,
+} from '@dto/article';
 import { GetListQueryDto } from '@dto/request';
 
 import { ArticleService } from './article.service';
@@ -33,6 +38,12 @@ export class ArticleController {
   @UseGuards(JwtRequiredGuard)
   async updateArticleById(@RequestUserID() userId: number, @Body() body: UpdateArticleBodyDto) {
     return this.articleService.updateArticle(userId, body);
+  }
+
+  @Put()
+  @UseGuards(JwtRequiredGuard)
+  async likeOrUnLikeArticle(@RequestUserID() userId: number, @Body() body: LikeOrUnLikeArticleBodyDto) {
+    return this.articleService.likeOrUnLikeArticle(userId, body);
   }
 
   @Delete(':id(\\d+)')

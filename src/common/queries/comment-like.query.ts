@@ -16,4 +16,12 @@ export class CommentLikeQuery {
   async countByComment(commentId: number) {
     return this.repo.count({ select: ['commentId'], where: { commentId } });
   }
+
+  async upsertCommentLike(commentId: number, userId: number) {
+    return this.repo.upsert({ commentId, userId }, { conflictPaths: { commentId: true, userId: true } });
+  }
+
+  async deleteCommentLike(commentId: number, userId: number) {
+    return this.repo.delete({ commentId, userId });
+  }
 }

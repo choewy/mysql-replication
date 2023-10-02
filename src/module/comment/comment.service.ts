@@ -8,6 +8,7 @@ import {
   CreateCommentBodyDto,
   GetCommentParamDto,
   GetCommentsByArticleParamDto,
+  LikeOrUnLikeCommentBodyDto,
   UpdateCommentBodyDto,
 } from '@dto/comment';
 import { GetListQueryDto } from '@dto/request';
@@ -103,6 +104,23 @@ export class CommentService {
 
     const commentRepository = this.dataSource.getRepository(Comment);
     await new CommentQuery(commentRepository).deleteComment(param.id);
+
+    return new ResponseDto(HttpStatus.OK);
+  }
+
+  async likeOrUnLikeComment(userId: number, body: LikeOrUnLikeCommentBodyDto) {
+    const commentQuery = new CommentQuery(this.commentRepository);
+
+    if (!(await commentQuery.hasCommentById(body.id))) {
+      throw new NotFoundException(new ResponseDto(HttpStatus.NOT_FOUND, `not found comment(id: ${body.id}).`));
+    }
+
+    const commentLikeRepository = this.dataSource.getRepository(CommentLike);
+    const commentLikeQuery = new CommentLikeQuery(commentLikeRepository);
+
+    body.like
+      ? await commentLikeQuery.upsertCommentLike(body.id, userId)
+      : await commentLikeQuery.deleteCommentLike(body.id, userId);
 
     return new ResponseDto(HttpStatus.OK);
   }

@@ -5,6 +5,13 @@ import { Comment } from '@common/entities';
 export class CommentQuery {
   constructor(private readonly repo: Repository<Comment>) {}
 
+  async hasCommentById(id: number) {
+    return !!(await this.repo.findOne({
+      select: ['id'],
+      where: { id },
+    }));
+  }
+
   async findCommentById(id: number) {
     return this.repo.findOne({
       relations: { user: true },

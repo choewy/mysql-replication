@@ -7,7 +7,13 @@ import { Article, ArticleLike, Comment } from '@common/entities';
 import { ArticleLikeQuery, ArticleQuery, CommentQuery } from '@common/queries';
 import { ResponseDto } from '@dto/response';
 import { GetListQueryDto } from '@dto/request';
-import { ArticleResponseDto, CreateArticleBodyDto, GetArticleParamDto, UpdateArticleBodyDto } from '@dto/article';
+import {
+  ArticleResponseDto,
+  CreateArticleBodyDto,
+  GetArticleParamDto,
+  LikeOrUnLikeArticleBodyDto,
+  UpdateArticleBodyDto,
+} from '@dto/article';
 
 @Injectable()
 export class ArticleService {
@@ -106,6 +112,23 @@ export class ArticleService {
 
     const articleRepository = this.dataSource.getRepository(Article);
     await new ArticleQuery(articleRepository).deleteArticle(param.id);
+
+    return new ResponseDto(HttpStatus.OK);
+  }
+
+  async likeOrUnLikeArticle(userId: number, body: LikeOrUnLikeArticleBodyDto) {
+    const articleQuery = new ArticleQuery(this.articleRepository);
+
+    if (!(await articleQuery.hasArticleById(body.id))) {
+      throw new NotFoundException(new ResponseDto(HttpStatus.NOT_FOUND, `not found article(id: ${body.id}).`));
+    }
+
+    const articleLikeRepository = this.dataSource.getRepository(ArticleLike);
+    const articleLikeQuery = new ArticleLikeQuery(articleLikeRepository);
+
+    body.like
+      ? await articleLikeQuery.upsertArticleLike(body.id, userId)
+      : await articleLikeQuery.deleteArticleLike(body.id, userId);
 
     return new ResponseDto(HttpStatus.OK);
   }
