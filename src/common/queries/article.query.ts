@@ -11,7 +11,7 @@ export class ArticleQuery {
     }));
   }
 
-  async findArticlesAndCountByLatest(skip = 0, take = 10) {
+  async findArticlesAndCount(skip = 0, take = 10) {
     return this.repo.findAndCount({
       relations: { user: true },
       select: {
@@ -47,7 +47,7 @@ export class ArticleQuery {
     return this.repo.save(article);
   }
 
-  async deleteArticle(articleId: number) {
-    return this.repo.softDelete(articleId);
+  async deleteArticle(id: number) {
+    return this.repo.softDelete(id);
   }
 }

@@ -5,6 +5,14 @@ import { Comment } from '@common/entities';
 export class CommentQuery {
   constructor(private readonly repo: Repository<Comment>) {}
 
+  async findCommentById(id: number) {
+    return this.repo.findOne({
+      relations: { user: true },
+      select: { user: { id: true } },
+      where: { id },
+    });
+  }
+
   async countByArticle(articleId: number) {
     return this.repo.count({
       relations: { article: true },
@@ -28,5 +36,13 @@ export class CommentQuery {
       skip,
       take,
     });
+  }
+
+  async saveComment(comment: Comment) {
+    return this.repo.save(comment);
+  }
+
+  async deleteComment(id: number) {
+    return this.repo.softDelete(id);
   }
 }
