@@ -7,7 +7,7 @@ import { Article, ArticleLike, Comment } from '@common/entities';
 import { ArticleLikeQuery, ArticleQuery, CommentQuery } from '@common/queries';
 import { ResponseDto } from '@dto/response';
 import { GetListQueryDto } from '@dto/request';
-import { CreateArticleBodyDto, GetArticleParamDto, UpdateArticleBodyDto } from '@dto/article';
+import { ArticleResponseDto, CreateArticleBodyDto, GetArticleParamDto, UpdateArticleBodyDto } from '@dto/article';
 
 @Injectable()
 export class ArticleService {
@@ -21,35 +21,36 @@ export class ArticleService {
     private readonly commentRepository: Repository<Comment>,
   ) {}
 
-  async getArticles(query?: GetListQueryDto, userId?: number) {
+  async getArticles(userId?: number, query?: GetListQueryDto) {
     const articleQuery = new ArticleQuery(this.articleRepository);
     const articleLikeQuery = new ArticleLikeQuery(this.articleLikeRepository);
     const commentQuery = new CommentQuery(this.commentRepository);
 
     const [articles, count] = await articleQuery.findArticlesAndCount(query?.skip, query?.take);
 
-    for (const article of articles) {
-      article.commentCount = await commentQuery.countByArticle(article.id);
-      article.likeCount = await articleLikeQuery.countByArticle(article.id);
+    for (const article of articles as ArticleResponseDto[]) {
       article.hasLike = await articleLikeQuery.hasByArticleAndUser(article.id, userId);
+      article.likeCount = await articleLikeQuery.countByArticle(article.id);
+      article.commentCount = await commentQuery.countByArticle(article.id);
     }
 
     return new ResponseDto(HttpStatus.OK, { count, articles });
   }
 
-  async getArticleById(body: GetArticleParamDto) {
+  async getArticleById(userId: number | undefined, body: GetArticleParamDto) {
     const articleQuery = new ArticleQuery(this.articleRepository);
-    const article = await articleQuery.findArticleById(body.id);
+    const articleLikeQuery = new ArticleLikeQuery(this.articleLikeRepository);
+    const article = (await articleQuery.findArticleById(body.id)) as ArticleResponseDto;
 
     if (!article) {
       throw new NotFoundException(new ResponseDto(HttpStatus.NOT_FOUND, `not found article(id: ${body.id}).`));
     }
 
     const commentQuery = new CommentQuery(this.commentRepository);
-    const [comments, commentCount] = await commentQuery.findCommentsAndCountByArticle(article.id);
 
-    article.commentCount = commentCount;
-    article.comments = comments;
+    article.hasLike = await articleLikeQuery.hasByArticleAndUser(article.id, userId);
+    article.likeCount = await articleLikeQuery.countByArticle(article.id);
+    article.commentCount = await commentQuery.countByArticle(article.id);
 
     return new ResponseDto(HttpStatus.OK, article);
   }

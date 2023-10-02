@@ -4,6 +4,7 @@ import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@
 import { InjectSlaveRepository } from '@common/decorators';
 import { Article, Comment, CommentLike } from '@common/entities';
 import {
+  CommentResponseDto,
   CreateCommentBodyDto,
   GetCommentParamDto,
   GetCommentsByArticleParamDto,
@@ -41,7 +42,7 @@ export class CommentService {
       query?.take,
     );
 
-    for (const comment of comments) {
+    for (const comment of comments as CommentResponseDto[]) {
       comment.likeCount = await commentLikeQuery.countByComment(comment.id);
       comment.hasLike = await commentLikeQuery.hasByCommentAndUser(comment.id, userId);
     }

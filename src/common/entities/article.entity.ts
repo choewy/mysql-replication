@@ -14,13 +14,7 @@ import { User } from './user.entity';
 import { Comment } from './comment.entity';
 import { ArticleLike } from './article-like.entity';
 
-class Mapper {
-  commentCount?: number;
-  likeCount?: number;
-  hasLike?: boolean;
-}
-
-class Relations extends Mapper {
+class Relations {
   @ManyToOne(() => User, (e) => e.articles, {
     onDelete: 'CASCADE',
   })
