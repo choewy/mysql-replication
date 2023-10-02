@@ -7,14 +7,13 @@ export class CommentQuery {
 
   async hasCommentById(id: number) {
     return !!(await this.repo.findOne({
-      select: ['id'],
+      select: { id: true },
       where: { id },
     }));
   }
 
   async findCommentById(id: number) {
     return this.repo.findOne({
-      relations: { user: true },
       select: { user: { id: true } },
       where: { id },
     });
@@ -22,7 +21,6 @@ export class CommentQuery {
 
   async countByArticle(articleId: number) {
     return this.repo.count({
-      relations: { article: true },
       select: { article: { id: true } },
       where: { article: { id: articleId } },
     });
@@ -30,7 +28,7 @@ export class CommentQuery {
 
   async findCommentsAndCountByArticle(articleId: number, skip = 0, take = 10) {
     return this.repo.findAndCount({
-      relations: { article: true, user: true },
+      relations: { user: true },
       select: {
         id: true,
         comment: true,

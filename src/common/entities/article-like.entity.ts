@@ -1,4 +1,4 @@
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { User } from './user.entity';
 import { Article } from './article.entity';
@@ -19,17 +19,11 @@ class Relations {
 
 @Entity({ name: ArticleLike.name })
 export class ArticleLike extends Relations {
-  @PrimaryColumn({
+  @PrimaryGeneratedColumn({
     type: 'bigint',
     unsigned: true,
   })
-  readonly userId: number;
-
-  @PrimaryColumn({
-    type: 'bigint',
-    unsigned: true,
-  })
-  readonly articleId: number;
+  readonly id: number;
 
   @CreateDateColumn()
   readonly likedAt: Date;

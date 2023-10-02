@@ -10,18 +10,29 @@ export class CommentLikeQuery {
       return false;
     }
 
-    return !!(await this.repo.findOne({ select: ['commentId', 'userId'], where: { commentId, userId } }));
+    return !!(await this.repo.findOne({
+      where: { comment: { id: commentId }, user: { id: userId } },
+    }));
   }
 
   async countByComment(commentId: number) {
-    return this.repo.count({ select: ['commentId'], where: { commentId } });
+    return this.repo.count({
+      select: { comment: { id: true } },
+      where: { comment: { id: commentId } },
+    });
   }
 
   async upsertCommentLike(commentId: number, userId: number) {
-    return this.repo.upsert({ commentId, userId }, { conflictPaths: { commentId: true, userId: true } });
+    return this.repo.upsert(
+      { comment: { id: commentId }, user: { id: userId } },
+      { conflictPaths: { comment: true, user: true } },
+    );
   }
 
   async deleteCommentLike(commentId: number, userId: number) {
-    return this.repo.delete({ commentId, userId });
+    return this.repo.delete({
+      comment: { id: commentId },
+      user: { id: userId },
+    });
   }
 }

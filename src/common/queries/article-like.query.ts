@@ -10,18 +10,32 @@ export class ArticleLikeQuery {
       return false;
     }
 
-    return !!(await this.repo.findOne({ select: ['articleId', 'userId'], where: { articleId, userId } }));
+    return !!(await this.repo.findOne({
+      where: {
+        article: { id: articleId },
+        user: { id: userId },
+      },
+    }));
   }
 
   async countByArticle(articleId: number) {
-    return this.repo.count({ select: ['articleId'], where: { articleId } });
+    return this.repo.count({
+      select: { article: { id: true } },
+      where: { article: { id: articleId } },
+    });
   }
 
   async upsertArticleLike(articleId: number, userId: number) {
-    return this.repo.upsert({ articleId, userId }, { conflictPaths: { articleId: true, userId: true } });
+    return this.repo.upsert(
+      { article: { id: articleId }, user: { id: userId } },
+      { conflictPaths: { article: true, user: true } },
+    );
   }
 
   async deleteArticleLike(articleId: number, userId: number) {
-    return this.repo.delete({ articleId, userId });
+    return this.repo.delete({
+      article: { id: articleId },
+      user: { id: userId },
+    });
   }
 }

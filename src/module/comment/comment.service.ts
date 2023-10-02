@@ -27,7 +27,7 @@ export class CommentService {
     private readonly commentLikeRepository: Repository<CommentLike>,
   ) {}
 
-  async getCommentsByArticle(param: GetCommentsByArticleParamDto, query?: GetListQueryDto, userId?: number) {
+  async getCommentsByArticle(userId: number | undefined, param: GetCommentsByArticleParamDto, query?: GetListQueryDto) {
     const articleQuery = new ArticleQuery(this.articleRepository);
 
     if (!(await articleQuery.hasArticleById(param.articleId))) {

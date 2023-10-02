@@ -18,8 +18,12 @@ export class CommentController {
 
   @Get(':articleId(\\d+)')
   @UseGuards(JwtOptionalGuard)
-  async getCommentsByArticle(@Param() param: GetCommentsByArticleParamDto, @Query() query?: GetListQueryDto) {
-    return this.commentService.getCommentsByArticle(param, query);
+  async getCommentsByArticle(
+    @RequestUserID() userId: number | undefined,
+    @Param() param: GetCommentsByArticleParamDto,
+    @Query() query?: GetListQueryDto,
+  ) {
+    return this.commentService.getCommentsByArticle(userId, param, query);
   }
 
   @Post()
