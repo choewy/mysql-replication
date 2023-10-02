@@ -36,14 +36,21 @@ export class User extends Relations {
   @Column({
     type: 'varchar',
     length: 400,
+    unique: true,
   })
   email: string;
 
   @Column({
     type: 'varchar',
-    length: 25,
+    length: 30,
   })
   nickname: string;
+
+  @Column({
+    type: 'varchar',
+    length: 200,
+  })
+  password: string;
 
   @CreateDateColumn()
   readonly createdAt: Date;
