@@ -3,30 +3,32 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Article } from './article.entity';
+import { User } from './user.entity';
 import { Comment } from './comment.entity';
 
 class Relations {
-  @OneToMany(() => Article, (e) => e.user, {
-    cascade: ['insert', 'update', 'soft-remove'],
+  @ManyToOne(() => User, (e) => e.articles, {
+    onDelete: 'CASCADE',
   })
-  @JoinTable()
-  articles: Article[];
+  @JoinColumn()
+  user: User;
 
-  @OneToMany(() => Comment, (e) => e.user, {
-    cascade: ['insert', 'update', 'soft-remove'],
+  @OneToMany(() => Comment, (e) => e.article, {
+    cascade: ['insert', 'soft-remove'],
   })
   @JoinTable()
   comments: Comment[];
 }
 
-@Entity({ name: User.name })
-export class User extends Relations {
+@Entity({ name: Article.name })
+export class Article extends Relations {
   @PrimaryGeneratedColumn({
     type: 'bigint',
     unsigned: true,
@@ -35,15 +37,15 @@ export class User extends Relations {
 
   @Column({
     type: 'varchar',
-    length: 400,
+    length: 255,
   })
-  email: string;
+  title: string;
 
   @Column({
     type: 'varchar',
-    length: 25,
+    length: 5012,
   })
-  nickname: string;
+  content: string;
 
   @CreateDateColumn()
   readonly createdAt: Date;

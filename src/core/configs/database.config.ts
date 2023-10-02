@@ -33,6 +33,16 @@ export class DatabaseConfig {
       synchronize: this.SYNCHRONIZE,
       dropSchema: this.DROP_SCHEMA,
       autoLoadEntities: true,
+      extra: {
+        typeCast: (field, next) => {
+          if (field.type.includes('LONG')) {
+            const value = field.string();
+            return value ? Number(value) : null;
+          }
+
+          return next();
+        },
+      },
     };
   }
 }
