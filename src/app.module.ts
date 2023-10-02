@@ -6,7 +6,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 import { DatabaseConfig, JwtConfig } from '@core/configs';
 import { DatabaseType } from '@core/constants';
-import { JwtGuard, JwtGuardStrategy } from '@common/guards';
+import { JwtGuardStrategy, JwtRequiredGuard, JwtOptionalGuard } from '@common/guards';
 import * as entities from '@common/entities';
 
 import { AppController } from './app.controller';
@@ -32,6 +32,6 @@ const entityTargets = Object.values(entities);
     CommentModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ThrottlerGuard, JwtGuardStrategy, JwtGuard],
+  providers: [AppService, ThrottlerGuard, JwtGuardStrategy, JwtRequiredGuard, JwtOptionalGuard],
 })
 export class AppModule {}

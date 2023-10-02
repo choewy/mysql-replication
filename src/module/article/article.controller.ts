@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 
-import { JwtGuard } from '@common/guards';
+import { JwtOptionalGuard, JwtRequiredGuard } from '@common/guards';
 import { RequestUserID } from '@common/decorators';
 import { CreateArticleBodyDto, GetArticleParamDto, UpdateArticleBodyDto } from '@dto/article';
 import { GetListQueryDto } from '@dto/request';
@@ -12,29 +12,31 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  async getArticles(@Query() query?: GetListQueryDto) {
-    return this.articleService.getArticles(query);
+  @UseGuards(JwtOptionalGuard)
+  async getArticles(@RequestUserID() userId: number, @Query() query?: GetListQueryDto) {
+    return this.articleService.getArticles(userId, query);
   }
 
   @Get(':id(\\d+)')
-  async getArticleById(@Param() param: GetArticleParamDto) {
-    return this.articleService.getArticleById(param);
+  @UseGuards(JwtOptionalGuard)
+  async getArticleById(@RequestUserID() userId: number, @Param() param: GetArticleParamDto) {
+    return this.articleService.getArticleById(userId, param);
   }
 
   @Post()
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtRequiredGuard)
   async createArticle(@RequestUserID() userId: number, @Body() body: CreateArticleBodyDto) {
     return this.articleService.createArticle(userId, body);
   }
 
   @Patch()
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtRequiredGuard)
   async updateArticleById(@RequestUserID() userId: number, @Body() body: UpdateArticleBodyDto) {
     return this.articleService.updateArticle(userId, body);
   }
 
   @Delete(':id(\\d+)')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtRequiredGuard)
   async deleteArticleById(@RequestUserID() userId: number, @Param() param: GetArticleParamDto) {
     return this.articleService.deleteArticle(userId, param);
   }
