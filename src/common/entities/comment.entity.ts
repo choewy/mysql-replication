@@ -4,14 +4,21 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Article } from './article.entity';
+import { CommentLike } from './comment-like.entity';
 
-class Relations {
+class Mapper {
+  likeCount?: number;
+  hasLike?: boolean;
+}
+
+class Relations extends Mapper {
   @ManyToOne(() => User, (e) => e.comments, {
     onDelete: 'CASCADE',
   })
@@ -23,6 +30,12 @@ class Relations {
   })
   @JoinColumn()
   article: Article;
+
+  @ManyToOne(() => CommentLike, (e) => e.comment, {
+    cascade: ['insert', 'remove'],
+  })
+  @JoinTable()
+  likes: CommentLike[];
 }
 
 @Entity({ name: Comment.name })

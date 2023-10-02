@@ -3,8 +3,8 @@ import { DataSource, Repository } from 'typeorm';
 import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectSlaveRepository } from '@common/decorators';
-import { Article, Comment } from '@common/entities';
-import { ArticleQuery, CommentQuery } from '@common/queries';
+import { Article, ArticleLike, Comment } from '@common/entities';
+import { ArticleLikeQuery, ArticleQuery, CommentQuery } from '@common/queries';
 import { ResponseDto } from '@dto/response';
 import { GetListQueryDto } from '@dto/request';
 import { CreateArticleBodyDto, GetArticleParamDto, UpdateArticleBodyDto } from '@dto/article';
@@ -15,18 +15,23 @@ export class ArticleService {
     private readonly dataSource: DataSource,
     @InjectSlaveRepository(Article)
     private readonly articleRepository: Repository<Article>,
+    @InjectSlaveRepository(ArticleLike)
+    private readonly articleLikeRepository: Repository<ArticleLike>,
     @InjectSlaveRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
   ) {}
 
-  async getArticles(query?: GetListQueryDto) {
+  async getArticles(query?: GetListQueryDto, userId?: number) {
     const articleQuery = new ArticleQuery(this.articleRepository);
+    const articleLikeQuery = new ArticleLikeQuery(this.articleLikeRepository);
     const commentQuery = new CommentQuery(this.commentRepository);
 
     const [articles, count] = await articleQuery.findArticlesAndCount(query?.skip, query?.take);
 
     for (const article of articles) {
       article.commentCount = await commentQuery.countByArticle(article.id);
+      article.likeCount = await articleLikeQuery.countByArticle(article.id);
+      article.hasLike = await articleLikeQuery.hasByArticleAndUser(article.id, userId);
     }
 
     return new ResponseDto(HttpStatus.OK, { count, articles });

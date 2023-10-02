@@ -12,9 +12,12 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
+import { ArticleLike } from './article-like.entity';
 
 class Mapper {
   commentCount?: number;
+  likeCount?: number;
+  hasLike?: boolean;
 }
 
 class Relations extends Mapper {
@@ -29,6 +32,12 @@ class Relations extends Mapper {
   })
   @JoinTable()
   comments: Comment[];
+
+  @ManyToOne(() => ArticleLike, (e) => e.article, {
+    cascade: ['insert', 'remove'],
+  })
+  @JoinTable()
+  likes: ArticleLike[];
 }
 
 @Entity({ name: Article.name })
