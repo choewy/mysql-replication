@@ -1,0 +1,3 @@
+[submodule "docker"]
+	path = docker
+	url = https://github.com/choewy/mysql-80-replication-docker.git
