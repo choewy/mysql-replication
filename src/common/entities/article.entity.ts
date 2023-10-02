@@ -27,7 +27,7 @@ class Relations {
   @JoinTable()
   comments: Comment[];
 
-  @ManyToOne(() => ArticleLike, (e) => e.article, {
+  @OneToMany(() => ArticleLike, (e) => e.article, {
     cascade: ['insert', 'remove'],
   })
   @JoinTable()

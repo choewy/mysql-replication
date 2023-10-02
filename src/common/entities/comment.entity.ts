@@ -6,6 +6,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -26,7 +27,7 @@ class Relations {
   @JoinColumn()
   article: Article;
 
-  @ManyToOne(() => CommentLike, (e) => e.comment, {
+  @OneToMany(() => CommentLike, (e) => e.comment, {
     cascade: ['insert', 'remove'],
   })
   @JoinTable()
