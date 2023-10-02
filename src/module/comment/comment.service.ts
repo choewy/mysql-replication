@@ -2,7 +2,7 @@ import { DataSource, Repository } from 'typeorm';
 import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectSlaveRepository } from '@common/decorators';
-import { Article, Comment } from '@common/entities';
+import { Article, Comment, CommentLike } from '@common/entities';
 import {
   CreateCommentBodyDto,
   GetCommentParamDto,
@@ -10,7 +10,7 @@ import {
   UpdateCommentBodyDto,
 } from '@dto/comment';
 import { GetListQueryDto } from '@dto/request';
-import { ArticleQuery, CommentQuery } from '@common/queries';
+import { ArticleQuery, CommentLikeQuery, CommentQuery } from '@common/queries';
 import { ResponseDto } from '@dto/response';
 
 @Injectable()
@@ -21,9 +21,11 @@ export class CommentService {
     private readonly articleRepository: Repository<Article>,
     @InjectSlaveRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    @InjectSlaveRepository(CommentLike)
+    private readonly commentLikeRepository: Repository<CommentLike>,
   ) {}
 
-  async getCommentsByArticle(param: GetCommentsByArticleParamDto, query?: GetListQueryDto) {
+  async getCommentsByArticle(param: GetCommentsByArticleParamDto, query?: GetListQueryDto, userId?: number) {
     const articleQuery = new ArticleQuery(this.articleRepository);
 
     if (!(await articleQuery.hasArticleById(param.articleId))) {
@@ -31,11 +33,18 @@ export class CommentService {
     }
 
     const commentQuery = new CommentQuery(this.commentRepository);
+    const commentLikeQuery = new CommentLikeQuery(this.commentLikeRepository);
+
     const [comments, count] = await commentQuery.findCommentsAndCountByArticle(
       param.articleId,
       query?.skip,
       query?.take,
     );
+
+    for (const comment of comments) {
+      comment.likeCount = await commentLikeQuery.countByComment(comment.id);
+      comment.hasLike = await commentLikeQuery.hasByCommentAndUser(comment.id, userId);
+    }
 
     return new ResponseDto(HttpStatus.OK, { count, comments });
   }
