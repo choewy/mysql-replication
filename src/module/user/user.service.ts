@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 
 import { InjectSlaveRepository } from '@common/decorators';
 import { User } from '@common/entities';
-import { UserQuery } from '@common/queries';
 
 @Injectable()
 export class UserService {
@@ -12,10 +11,4 @@ export class UserService {
     @InjectSlaveRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-
-  async getUsersAndCount() {
-    const [users, count] = await new UserQuery(this.userRepository).findUsersAndCount();
-
-    return { count, users };
-  }
 }
